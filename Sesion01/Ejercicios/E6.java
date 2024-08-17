@@ -12,7 +12,7 @@ public class E6
 		int horas = scanner.nextInt();
 		System.out.print("Ingrese el numero de minutos: ");
 		int minutos = scanner.nextInt();
-		System.out.print("Ingrese el número de segundos: ");
+		System.out.print("Ingrese el numero de segundos: ");
         int segundos = scanner.nextInt();
         
         int totalSegundos = ConvertirSegundos(horas, minutos, segundos);
