@@ -38,7 +38,7 @@ public class Cuadrado extends Forma
 }
 
 
-public class Main
+public class E2
 {
 	public static void main(String[] args)
 	{
