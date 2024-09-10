@@ -7,7 +7,6 @@ interface PoliticaCancelacion
     boolean puedeCancelar(Reserva reserva, LocalDateTime fechaCancelacion);
 }
 
-// Política de cancelación flexible
 class PoliticaCancelacionFlexible implements PoliticaCancelacion 
 {
     @Override
@@ -18,7 +17,6 @@ class PoliticaCancelacionFlexible implements PoliticaCancelacion
     }
 }
 
-// Política de cancelación moderada
 class PoliticaCancelacionModerada implements PoliticaCancelacion 
 {
     @Override
@@ -29,7 +27,6 @@ class PoliticaCancelacionModerada implements PoliticaCancelacion
     }
 }
 
-// Política de cancelación estricta
 class PoliticaCancelacionEstricta implements PoliticaCancelacion 
 {
     @Override
