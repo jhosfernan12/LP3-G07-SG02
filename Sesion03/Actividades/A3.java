@@ -1,89 +1,124 @@
-using System;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
-public class Habitacion
+interface PoliticaCancelacion 
 {
-    public string Numero { get; set; }
-    public decimal PrecioPorNoche { get; set; }
+    boolean puedeCancelar(Reserva reserva, LocalDateTime fechaCancelacion);
+}
 
-    public Habitacion(string numero, decimal precioPorNoche)
+class PoliticaCancelacionFlexible implements PoliticaCancelacion 
+{
+    @Override
+    public boolean puedeCancelar(Reserva reserva, LocalDateTime fechaCancelacion) 
     {
-        Numero = numero;
-        PrecioPorNoche = precioPorNoche;
-    }
-
-    public virtual decimal CalcularPrecioTotal(int noches)
-    {
-        return PrecioPorNoche * noches;
-    }
-
-    public virtual void Reservar()
-    {
-        Console.WriteLine("Habitacion reservada.");
+        LocalDateTime checkIn = reserva.getCheckIn();
+        return ChronoUnit.HOURS.between(fechaCancelacion, checkIn) >= 24;
     }
 }
 
-public class Suite : Habitacion
+class PoliticaCancelacionModerada implements PoliticaCancelacion
 {
-    public decimal CostoServiciosAdicionales { get; set; }
-
-    public Suite(string numero, decimal precioPorNoche, decimal costoServicios)
-        : base(numero, precioPorNoche)
+    @Override
+    public boolean puedeCancelar(Reserva reserva, LocalDateTime fechaCancelacion) 
     {
-        CostoServiciosAdicionales = costoServicios;
-    }
-
-    public override decimal CalcularPrecioTotal(int noches)
-    {
-        return base.CalcularPrecioTotal(noches) + CostoServiciosAdicionales;
+        LocalDateTime checkIn = reserva.getCheckIn();
+        return ChronoUnit.HOURS.between(fechaCancelacion, checkIn) >= 72;
     }
 }
 
-public class HabitacionEconomica : Habitacion
+class PoliticaCancelacionEstricta implements PoliticaCancelacion 
 {
-    public decimal DescuentoPorNoche { get; set; }
-
-    public HabitacionEconomica(string numero, decimal precioPorNoche, decimal descuento)
-        : base(numero, precioPorNoche)
+    @Override
+    public boolean puedeCancelar(Reserva reserva, LocalDateTime fechaCancelacion) 
     {
-        if (descuento < 0)
+        return false;
+    }
+}
+
+class Habitacion 
+{
+    public double calcularPrecio(String temporada) 
+    {
+        return 100.0;
+    }
+}
+
+class HabitacionSimple extends Habitacion 
+{
+}
+
+class HabitacionDoble extends Habitacion 
+{
+}
+
+class HabitacionSuite extends Habitacion 
+{
+    @Override
+    public double calcularPrecio(String temporada) {
+        return super.calcularPrecio(temporada) + 200.0;
+    }
+}
+
+class Reserva 
+{
+    private Habitacion habitacion;
+    private LocalDateTime checkIn;
+    private LocalDateTime checkOut;
+    private Cliente cliente;
+    private PoliticaCancelacion politicaCancelacion;
+
+    public Reserva(Habitacion habitacion, LocalDateTime checkIn, LocalDateTime checkOut, Cliente cliente, PoliticaCancelacion politicaCancelacion) {
+        this.habitacion = habitacion;
+        this.checkIn = checkIn;
+        this.checkOut = checkOut;
+        this.cliente = cliente;
+        this.politicaCancelacion = politicaCancelacion;
+    }
+
+    public LocalDateTime getCheckIn() 
+    {
+        return checkIn;
+    }
+
+    public boolean cancelar(LocalDateTime fechaCancelacion) 
+    {
+        if (politicaCancelacion.puedeCancelar(this, fechaCancelacion)) 
         {
-            throw new ArgumentException("El descuento no puede ser negativo.");
-        }
-
-        DescuentoPorNoche = descuento;
-    }
-
-    public override decimal CalcularPrecioTotal(int noches)
-    {
-        decimal precioTotal = base.CalcularPrecioTotal(noches) - (DescuentoPorNoche * noches);
-        if (precioTotal < 0)
+            return true;
+        } 
+        else 
         {
-            return 0; // Aseguramos que el precio no sea negativo.
+            return false;
         }
-        return precioTotal;
     }
 }
 
-public class ControladorReservas
+class Cliente 
 {
-    public void ProcesarReserva(Habitacion habitacion, int noches)
+    private String nombre;
+    private String documento;
+
+    public Cliente(String nombre, String documento) 
     {
-        decimal precioTotal = habitacion.CalcularPrecioTotal(noches);
-        Console.WriteLine($"Reserva procesada para la habitacion {habitacion.Numero} por {noches} noches. Precio total: {precioTotal}");
-        habitacion.Reservar();
+        this.nombre = nombre;
+        this.documento = documento;
     }
 }
 
-public class Programa
+class Controlador 
 {
-    public static void Main(string[] args)
+    public Reserva crearReserva(Habitacion habitacion, LocalDateTime checkIn, LocalDateTime checkOut, Cliente cliente, PoliticaCancelacion politicaCancelacion) {
+        return new Reserva(habitacion, checkIn, checkOut, cliente, politicaCancelacion);
+    }
+
+    public boolean cancelarReserva(Reserva reserva, LocalDateTime fechaCancelacion) 
     {
-        ControladorReservas controlador = new ControladorReservas();
+        return reserva.cancelar(fechaCancelacion);
+    }
 
-        Habitacion suite = new Suite("101", 200, 50);
-        controlador.ProcesarReserva(suite, 3);
-
-        Habitacion habitacionEconomica = new HabitacionEconomica("102", 100, 20);
-        controlador.ProcesarReserva(habitacionEconomica, 3);
+    public void procesarReserva(Habitacion habitacion)
+     {
+        double precio = habitacion.calcularPrecio("AltaTemporada");
+        System.out.println("Precio: " + precio);
     }
 }
