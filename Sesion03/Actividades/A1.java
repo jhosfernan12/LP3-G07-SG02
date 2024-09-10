@@ -1,158 +1,124 @@
-public class Habitacion
+import java.util.List;
+import java.util.Map;
+
+class Habitacion 
 {
-    public int NumeroHabitacion { get; set; }
-    public bool Disponible { get; set; }
-    public List<Reserva> Reservas { get; set; }
-    public decimal PrecioBase { get; set; }
+    private int numero;
+    private double precio;
+    private GestorDisponibilidadHabitacion gestorDisponibilidad;
 
-    public Habitacion(int numeroHabitacion, decimal precioBase)
+    public Habitacion(int numero, double precio) 
     {
-        NumeroHabitacion = numeroHabitacion;
-        PrecioBase = precioBase;
-        Disponible = true;
-        Reservas = new List<Reserva>();
+        this.numero = numero;
+        this.precio = precio;
+        this.gestorDisponibilidad = new GestorDisponibilidadHabitacion();
     }
 
-
-    public bool EsDisponible(DateTime fechaInicio, DateTime fechaFin)
+    public boolean verificarDisponibilidad(String fechaInicio, String fechaFin) 
     {
-        foreach (var reserva in Reservas)
-        {
-            if (reserva.IntersectaCon(fechaInicio, fechaFin))
-            {
-                return false;
-            }
-        }
-        return true;
+        return gestorDisponibilidad.verificarDisponibilidad(this, fechaInicio, fechaFin);
     }
 
-    public void MarcarComoReservada(Reserva reserva)
+    public void marcarComoReservada(boolean reservada) 
     {
-        Reservas.Add(reserva);
-        Disponible = false;
+        gestorDisponibilidad.marcarDisponibilidad(this, reservada);
     }
 
-
-    public decimal CalcularPrecio(DateTime fechaInicio, DateTime fechaFin)
+    public double calcularPrecio(String temporada) 
     {
-        decimal precioTotal = 0;
-        int dias = (fechaFin - fechaInicio).Days;
-        precioTotal = PrecioBase * dias; 
-        return precioTotal;
+        return gestorDisponibilidad.calcularPrecio(this, temporada);
     }
 
-    
-    public void GenerarInformeOcupacion()
+    public void generarInformeOcupacion() 
     {
-        Console.WriteLine($"Habitacion {NumeroHabitacion} ha sido ocupada {Reservas.Count} veces.");
+        gestorDisponibilidad.generarInformeOcupacion(this);
+    }
+
+    public void setGestorDisponibilidad(GestorDisponibilidadHabitacion gestor) 
+    {
+        this.gestorDisponibilidad = gestor;
     }
 }
 
-public class GestorDisponibilidadHabitacion
+class GestorDisponibilidadHabitacion 
 {
     private List<Reserva> reservas;
-    private decimal precioBase;
+    private Map<String, Double> promociones;
 
-    public GestorDisponibilidadHabitacion(List<Reserva> reservas, decimal precioBase)
+    public boolean verificarDisponibilidad(Habitacion habitacion, String fechaInicio, String fechaFin) 
     {
-        this.reservas = reservas;
-        this.precioBase = precioBase;
+        return true; /
     }
 
-
-    public bool EsDisponible(DateTime fechaInicio, DateTime fechaFin)
+    public void marcarDisponibilidad(Habitacion habitacion, boolean reservada) 
     {
-        foreach (var reserva in reservas)
-        {
-            if (reserva.IntersectaCon(fechaInicio, fechaFin))
-            {
-                return false;
-            }
-        }
-        return true;
+ 
     }
 
-
-    public void MarcarComoReservada(Reserva reserva)
+    public double calcularPrecio(Habitacion habitacion, String temporada) 
     {
-        reservas.Add(reserva);
+        return habitacion.precio; // Placeholder
     }
 
-
-    public decimal CalcularPrecio(DateTime fechaInicio, DateTime fechaFin)
+    public void generarInformeOcupacion(Habitacion habitacion) 
     {
-        decimal precioTotal = 0;
-        int dias = (fechaFin - fechaInicio).Days;
-        precioTotal = precioBase * dias; 
-        return precioTotal;
-    }
 
-    public void GenerarInformeOcupacion()
-    {
-        Console.WriteLine($"La habitacion ha sido ocupada {reservas.Count} veces.");
     }
 }
 
-public class Habitacion
+class Reserva 
 {
-    public int NumeroHabitacion { get; set; }
-    public GestorDisponibilidadHabitacion gestorDisponibilidad { get; set; }
+    private Habitacion habitacion;
+    private String fechaInicio;
+    private String fechaFin;
+    private Cliente cliente;
 
-    public Habitacion(int numeroHabitacion, decimal precioBase)
-    {
-        NumeroHabitacion = numeroHabitacion;
-        gestorDisponibilidad = new GestorDisponibilidadHabitacion(new List<Reserva>(), precioBase);
+    public Reserva(Habitacion habitacion, String fechaInicio, String fechaFin, Cliente cliente) {
+        this.habitacion = habitacion;
+        this.fechaInicio = fechaInicio;
+        this.fechaFin = fechaFin;
+        this.cliente = cliente;
     }
 
-    // Si la clase Habitacion necesita verificar la disponibilidad, delega la tarea al gestor
-    public bool EsDisponible(DateTime fechaInicio, DateTime fechaFin)
-    {
-        return gestorDisponibilidad.EsDisponible(fechaInicio, fechaFin);
-    }
-
-    // Otras interacciones con el gestor
-    public decimal CalcularPrecio(DateTime fechaInicio, DateTime fechaFin)
-    {
-        return gestorDisponibilidad.CalcularPrecio(fechaInicio, fechaFin);
-    }
-
-    public void MarcarComoReservada(Reserva reserva)
-    {
-        gestorDisponibilidad.MarcarComoReservada(reserva);
-    }
-
-    public void GenerarInformeOcupacion()
-    {
-        gestorDisponibilidad.GenerarInformeOcupacion();
-    }
 }
 
-public class ControladorReserva
+class Cliente 
 {
-    public void CrearReserva(Habitacion habitacion, DateTime fechaInicio, DateTime fechaFin, Cliente cliente)
+    private String nombre;
+    private String documento;
+
+    public Cliente(String nombre, String documento) 
     {
-        if (habitacion.EsDisponible(fechaInicio, fechaFin))
-        {
-            Reserva nuevaReserva = new Reserva(fechaInicio, fechaFin, cliente);
-            habitacion.MarcarComoReservada(nuevaReserva);
-            Console.WriteLine($"Habitacion {habitacion.NumeroHabitacion} reservada exitosamente.");
-        }
-        else
-        {
-            Console.WriteLine($"La habitacion {habitacion.NumeroHabitacion} no esta disponible.");
-        }
+        this.nombre = nombre;
+        this.documento = documento;
     }
 
-    public void ConsultarDisponibilidad(Habitacion habitacion, DateTime fechaInicio, DateTime fechaFin)
-    {
-        if (habitacion.EsDisponible(fechaInicio, fechaFin))
-        {
-            Console.WriteLine($"La habitacion {habitacion.NumeroHabitacion} esta disponible.");
-        }
-        else
-        {
-            Console.WriteLine($"La habitacion {habitacion.NumeroHabitacion} no esta disponible.");
-        }
-    }
+
 }
 
+class Controlador
+{
+    private GestorDisponibilidadHabitacion gestorDisponibilidad;
+
+    public Controlador() 
+    {
+        this.gestorDisponibilidad = new GestorDisponibilidadHabitacion();
+    }
+
+    public void crearReserva(Habitacion habitacion, String fechaInicio, String fechaFin, Cliente cliente) {
+        if (gestorDisponibilidad.verificarDisponibilidad(habitacion, fechaInicio, fechaFin)) {
+            habitacion.marcarComoReservada(true);
+            new Reserva(habitacion, fechaInicio, fechaFin, cliente);
+        } 
+        else 
+        {
+            System.out.println("Habitación no disponible.");
+        }
+    }
+
+    public void consultarDisponibilidad(Habitacion habitacion, String fechaInicio, String fechaFin) 
+    {
+        boolean disponible = gestorDisponibilidad.verificarDisponibilidad(habitacion, fechaInicio, fechaFin);
+        System.out.println(disponible ? "Habitación disponible." : "Habitación no disponible.");
+    }
+}
