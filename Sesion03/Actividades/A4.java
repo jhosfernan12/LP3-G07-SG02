@@ -1,101 +1,74 @@
-using System;
-
-public interface IServicioLimpieza
+interface ServicioLimpieza 
 {
-    void SolicitarLimpieza();
+    void solicitarLimpieza();
 }
 
-public interface IServicioComida
+interface ServicioComida 
 {
-    void SolicitarComida(string menu);
+    void solicitarComida(String comida);
 }
 
-public interface IServicioLavanderia
+interface ServicioLavanderia 
 {
-    void SolicitarLavanderia(int cantidadPrendas);
+    void solicitarLavanderia(String prenda);
 }
 
-
-public class Habitacion
+class Habitacion 
 {
-    public string Numero { get; set; }
-
-    public Habitacion(string numero)
-    {
-        Numero = numero;
-    }
-
-    public void Reservar()
-    {
-        Console.WriteLine($"Habitacion {Numero} reservada.");
-    }
 }
 
-
-public class HabitacionStandard : Habitacion, IServicioLimpieza
+class HabitacionSimple extends Habitacion 
 {
-    public HabitacionStandard(string numero) : base(numero) {}
-
-    public void SolicitarLimpieza()
-    {
-        Console.WriteLine($"Se ha solicitado limpieza para la habitacion {Numero}.");
-    }
 }
 
-public class Suite : Habitacion, IServicioLimpieza, IServicioComida, IServicioLavanderia
+class HabitacionDoble extends Habitacion 
 {
-    public Suite(string numero) : base(numero) {}
+}
 
-    public void SolicitarLimpieza()
+class HabitacionSuite extends Habitacion implements ServicioLimpieza, ServicioComida, ServicioLavanderia {
+    @Override
+    public void solicitarLimpieza() 
     {
-        Console.WriteLine($"Se ha solicitado limpieza para la suite {Numero}.");
+        System.out.println("Limpieza solicitada para habitación suite.");
     }
 
-    public void SolicitarComida(string menu)
+    @Override
+    public void solicitarComida(String comida) 
     {
-        Console.WriteLine($"Se ha solicitado el menu '{menu}' para la suite {Numero}.");
+        System.out.println("Comida solicitada en habitación suite: " + comida);
     }
 
-    public void SolicitarLavanderia(int cantidadPrendas)
+    @Override
+    public void solicitarLavanderia(String prenda) 
     {
-        Console.WriteLine($"Se ha solicitado el servicio de lavanderia para {cantidadPrendas} prendas en la suite {Numero}.");
+        System.out.println("Lavandería solicitada para habitación suite: " + prenda);
     }
 }
 
-
-public class ControladorServicios
-{
-    public void ProcesarServicios(Habitacion habitacion)
+class Controlador {
+    public void solicitarServicios(Habitacion habitacion) 
     {
-        Console.WriteLine($"Procesando servicios para la habitacion {habitacion.Numero}.");
-
-        if (habitacion is IServicioLimpieza limpieza)
+        if (habitacion instanceof ServicioLimpieza) 
         {
-            limpieza.SolicitarLimpieza();
+            ((ServicioLimpieza) habitacion).solicitarLimpieza();
         }
-
-        if (habitacion is IServicioComida comida)
+        if (habitacion instanceof ServicioComida) 
         {
-            comida.SolicitarComida("Desayuno continental");
+            ((ServicioComida) habitacion).solicitarComida("Pizza");
         }
-
-        if (habitacion is IServicioLavanderia lavanderia)
+        if (habitacion instanceof ServicioLavanderia) 
         {
-            lavanderia.SolicitarLavanderia(5);
+            ((ServicioLavanderia) habitacion).solicitarLavanderia("Camisa");
         }
     }
 }
 
-public class Programa
+public class Main
 {
-    public static void Main(string[] args)
+    public static void main(String[] args) 
     {
-        ControladorServicios controlador = new ControladorServicios();
-
-        Habitacion habitacionStandard = new HabitacionStandard("101");
-        controlador.ProcesarServicios(habitacionStandard);
-
-        Habitacion suite = new Suite("202");
-        controlador.ProcesarServicios(suite);
+        HabitacionSuite habitacionSuite = new HabitacionSuite();
+        Controlador controlador = new Controlador();
+        controlador.solicitarServicios(habitacionSuite);
     }
 }
