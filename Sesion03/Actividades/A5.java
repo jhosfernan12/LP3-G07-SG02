@@ -1,91 +1,65 @@
-using System;
-
-
-public interface ICanalNotificacion
+interface CanalNotificacion 
 {
-    void EnviarNotificacion(string mensaje);
+    void enviarNotificacion(String mensaje);
 }
 
-
-public class EnviadorCorreo : ICanalNotificacion
+class EnviadorCorreo implements CanalNotificacion 
 {
-    public void EnviarNotificacion(string mensaje)
+    @Override
+    public void enviarNotificacion(String mensaje) 
     {
-        Console.WriteLine("Enviando correo: " + mensaje);
+        System.out.println("Enviando correo: " + mensaje);
     }
 }
 
-
-public class EnviadorSMS : ICanalNotificacion
+class EnviadorSMS implements CanalNotificacion 
 {
-    public void EnviarNotificacion(string mensaje)
+    @Override
+    public void enviarNotificacion(String mensaje) 
     {
-        Console.WriteLine("Enviando SMS: " + mensaje);
+        System.out.println("Enviando SMS: " + mensaje);
     }
 }
 
-
-public class NotificadorSlack : ICanalNotificacion
+class NotificadorSlack implements CanalNotificacion 
 {
-    public void EnviarNotificacion(string mensaje)
+    @Override
+    public void enviarNotificacion(String mensaje) 
     {
-        Console.WriteLine("Enviando mensaje a Slack: " + mensaje);
+        System.out.println("Enviando notificación a Slack: " + mensaje);
     }
 }
 
-
-public class NotificadorReserva
+class NotificadorReserva 
 {
-    private readonly ICanalNotificacion _canalNotificacion;
+    private CanalNotificacion canalNotificacion;
 
-    public NotificadorReserva(ICanalNotificacion canalNotificacion)
+    public NotificadorReserva(CanalNotificacion canalNotificacion) 
     {
-        _canalNotificacion = canalNotificacion;
+        this.canalNotificacion = canalNotificacion;
     }
 
-    public void Notificar(string mensaje)
+    public void notificarReserva(String mensaje) 
     {
-        _canalNotificacion.EnviarNotificacion(mensaje);
+        canalNotificacion.enviarNotificacion(mensaje);
     }
 }
 
-public class ControladorReservas
+class Controlador 
 {
-    private readonly NotificadorReserva _notificadorReserva;
-
-    public ControladorReservas(NotificadorReserva notificadorReserva)
+    public void procesarReserva() 
     {
-        _notificadorReserva = notificadorReserva;
-    }
-
-    public void CrearReserva(string mensajeReserva)
-    {
-        Console.WriteLine("Reserva creada.");
-        _notificadorReserva.Notificar(mensajeReserva);
+        CanalNotificacion canal = new EnviadorCorreo(); 
+        NotificadorReserva notificador = new NotificadorReserva(canal);
+        notificador.notificarReserva("Reserva confirmada.");
     }
 }
 
-
-public class Programa
+public class Main 
 {
-    public static void Main(string[] args)
+    public static void main(String[] args) 
     {
-       
-        ICanalNotificacion canalCorreo = new EnviadorCorreo();
-        NotificadorReserva notificadorCorreo = new NotificadorReserva(canalCorreo);
-        ControladorReservas controladorCorreo = new ControladorReservas(notificadorCorreo);
-        controladorCorreo.CrearReserva("Reserva confirmada para el 12 de septiembre.");
-
-       
-        ICanalNotificacion canalSMS = new EnviadorSMS();
-        NotificadorReserva notificadorSMS = new NotificadorReserva(canalSMS);
-        ControladorReservas controladorSMS = new ControladorReservas(notificadorSMS);
-        controladorSMS.CrearReserva("Reserva confirmada para el 15 de septiembre.");
-
-      
-        ICanalNotificacion canalSlack = new NotificadorSlack();
-        NotificadorReserva notificadorSlack = new NotificadorReserva(canalSlack);
-        ControladorReservas controladorSlack = new ControladorReservas(notificadorSlack);
-        controladorSlack.CrearReserva("Reserva confirmada para el 20 de septiembre.");
+        Controlador controlador = new Controlador();
+        controlador.procesarReserva();
     }
 }
