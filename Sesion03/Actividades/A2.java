@@ -1,128 +1,115 @@
-using System;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
-public interface PoliticaCancelacion
+
+interface PoliticaCancelacion 
 {
-    bool PuedeCancelar(Reserva reserva);
-    decimal ObtenerPenalizacion(Reserva reserva);
+    boolean puedeCancelar(Reserva reserva, LocalDateTime fechaCancelacion);
 }
 
-public class PoliticaCancelacionFlexible : PoliticaCancelacion
+// Política de cancelación flexible
+class PoliticaCancelacionFlexible implements PoliticaCancelacion 
 {
-    public bool PuedeCancelar(Reserva reserva)
+    @Override
+    public boolean puedeCancelar(Reserva reserva, LocalDateTime fechaCancelacion) 
     {
-        return DateTime.Now < reserva.FechaCheckIn.AddHours(-24);
-    }
-
-    public decimal ObtenerPenalizacion(Reserva reserva)
-    {
-        return 0;
-    }
-}
-
-public class PoliticaCancelacionModerada : PoliticaCancelacion
-{
-    public bool PuedeCancelar(Reserva reserva)
-    {
-        return DateTime.Now < reserva.FechaCheckIn.AddHours(-72);
-    }
-
-    public decimal ObtenerPenalizacion(Reserva reserva)
-    {
-        if (PuedeCancelar(reserva))
-        {
-            return 0;
-        }
-        return reserva.CalcularMonto() * 0.5m;
+        LocalDateTime checkIn = reserva.getCheckIn();
+        return ChronoUnit.HOURS.between(fechaCancelacion, checkIn) >= 24;
     }
 }
 
-public class PoliticaCancelacionEstricta : PoliticaCancelacion
+// Política de cancelación moderada
+class PoliticaCancelacionModerada implements PoliticaCancelacion 
 {
-    public bool PuedeCancelar(Reserva reserva)
+    @Override
+    public boolean puedeCancelar(Reserva reserva, LocalDateTime fechaCancelacion) 
+    {
+        LocalDateTime checkIn = reserva.getCheckIn();
+        return ChronoUnit.HOURS.between(fechaCancelacion, checkIn) >= 72;
+    }
+}
+
+// Política de cancelación estricta
+class PoliticaCancelacionEstricta implements PoliticaCancelacion 
+{
+    @Override
+    public boolean puedeCancelar(Reserva reserva, LocalDateTime fechaCancelacion) 
     {
         return false;
     }
+}
 
-    public decimal ObtenerPenalizacion(Reserva reserva)
+
+class Reserva 
+{
+    private Habitacion habitacion;
+    private LocalDateTime checkIn;
+    private LocalDateTime checkOut;
+    private Cliente cliente;
+    private PoliticaCancelacion politicaCancelacion;
+
+    public Reserva(Habitacion habitacion, LocalDateTime checkIn, LocalDateTime checkOut, Cliente cliente, PoliticaCancelacion politicaCancelacion) {
+        this.habitacion = habitacion;
+        this.checkIn = checkIn;
+        this.checkOut = checkOut;
+        this.cliente = cliente;
+        this.politicaCancelacion = politicaCancelacion;
+    }
+
+    public LocalDateTime getCheckIn() 
     {
-        return reserva.CalcularMonto();
+        return checkIn;
+    }
+
+    public boolean cancelar(LocalDateTime fechaCancelacion) 
+    {
+        if (politicaCancelacion.puedeCancelar(this, fechaCancelacion)) 
+        {
+
+            return true;
+        } 
+        else 
+        {
+
+            return false;
+        }
     }
 }
 
-public class Reserva
+
+class Controlador 
 {
-    public DateTime FechaCheckIn { get; set; }
-    public DateTime FechaCheckOut { get; set; }
-    public bool Cancelada { get; private set; }
-    public PoliticaCancelacion Politica { get; set; }
-    public decimal Monto { get; set; }
-
-    public Reserva(DateTime checkIn, DateTime checkOut, PoliticaCancelacion politica, decimal monto)
+    public Reserva crearReserva(Habitacion habitacion, LocalDateTime checkIn, LocalDateTime checkOut, Cliente cliente, PoliticaCancelacion politicaCancelacion) 
     {
-        FechaCheckIn = checkIn;
-        FechaCheckOut = checkOut;
-        Cancelada = false;
-        Politica = politica;
-        Monto = monto;
+        return new Reserva(habitacion, checkIn, checkOut, cliente, politicaCancelacion);
     }
 
-    public void Cancelar()
+    public boolean cancelarReserva(Reserva reserva, LocalDateTime fechaCancelacion) 
     {
-        if (Politica.PuedeCancelar(this))
-        {
-            Cancelada = true;
-            Console.WriteLine("Reserva cancelada.");
-        }
-        else
-        {
-            Console.WriteLine($"No se puede cancelar. Penalizacion aplicada: {Politica.ObtenerPenalizacion(this)}");
-        }
-    }
-
-    public decimal CalcularMonto()
-    {
-        return Monto;
+        return reserva.cancelar(fechaCancelacion);
     }
 }
 
-public class ControladorReserva
+class Habitacion 
 {
-    public void CrearReserva(DateTime checkIn, DateTime checkOut, decimal monto, string tipoPolitica)
-    {
-        PoliticaCancelacion politica = SeleccionarPolitica(tipoPolitica);
-        Reserva nuevaReserva = new Reserva(checkIn, checkOut, politica, monto);
-        Console.WriteLine("Reserva creada con exito.");
-    }
+    private int numero;
+    private double precio;
 
-    private PoliticaCancelacion SeleccionarPolitica(string tipoPolitica)
+    public Habitacion(int numero, double precio) 
     {
-        switch (tipoPolitica.ToLower())
-        {
-            case "flexible":
-                return new PoliticaCancelacionFlexible();
-            case "moderada":
-                return new PoliticaCancelacionModerada();
-            case "estricta":
-                return new PoliticaCancelacionEstricta();
-            default:
-                throw new Exception("Politica de cancelacion no valida.");
-        }
-    }
-
-    public void CancelarReserva(Reserva reserva)
-    {
-        reserva.Cancelar();
+        this.numero = numero;
+        this.precio = precio;
     }
 }
 
-public class Programa
+class Cliente 
 {
-    public static void Main(string[] args)
-    {
-        ControladorReserva controlador = new ControladorReserva();
-        controlador.CrearReserva(DateTime.Now.AddDays(5), DateTime.Now.AddDays(7), 500, "moderada");
+    private String nombre;
+    private String documento;
 
-        Reserva reserva = new Reserva(DateTime.Now.AddDays(5), DateTime.Now.AddDays(7), new PoliticaCancelacionModerada(), 500);
-        controlador.CancelarReserva(reserva);
+    public Cliente(String nombre, String documento)
+    {
+        this.nombre = nombre;
+        this.documento = documento;
     }
 }
