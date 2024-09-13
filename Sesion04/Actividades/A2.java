@@ -80,8 +80,8 @@ public class CuentaBancaria
         try 
         {
  
-            CuentaBancaria cuenta1 = new CuentaBancaria("12345", "Juan Pérez", 1000.0);
-            CuentaBancaria cuenta2 = new CuentaBancaria("67890", "Ana García", 500.0);
+            CuentaBancaria cuenta1 = new CuentaBancaria("12345", "Fernando Pacheco", 1000.0);
+            CuentaBancaria cuenta2 = new CuentaBancaria("67890", "Leonardo Diaz", 500.0);
 
             System.out.println("Cuenta 1 creada con saldo: " + cuenta1.getSaldo());
             System.out.println("Cuenta 2 creada con saldo: " + cuenta2.getSaldo());
