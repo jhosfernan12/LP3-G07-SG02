@@ -58,7 +58,7 @@ public class CuentaBancaria
     {
         try 
         {
-            CuentaBancaria cuenta1 = new CuentaBancaria("12345", "Juan Pérez", 1000.0);
+            CuentaBancaria cuenta1 = new CuentaBancaria("12345", "Fernando Pacheco", 1000.0);
             System.out.println("Cuenta 1 creada con saldo: " + cuenta1.getSaldo());
 
             cuenta1.depositar(500.0);
