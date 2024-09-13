@@ -1,3 +1,5 @@
+package s4;
+
 public class CuentaBancaria 
 {
     private String numeroCuenta;
