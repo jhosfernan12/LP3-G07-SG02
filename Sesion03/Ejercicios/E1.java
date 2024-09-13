@@ -1,57 +1,65 @@
-package s3_1;
+package s3;
 
-public abstract class Vehiculo
-  {
-  	protected int velocidad;
-    public Vehiculo() 
-    {
-         this.velocidad = 0;
-   }
-   public abstract void acelerar();
-   public int getVelocidad() 
+public class empleado 
+{
+	 private String nombre;
+	    private double salario;
+	    private String departamento;
+
+	    public empleado(String nombre, double salario, String departamento) 
+            {
+	        this.nombre = nombre;
+	        this.salario = salario;
+	        this.departamento = departamento;
+	    }
+
+	    public String getNombre() 
+            {
+	        return nombre;
+	    }
+
+	    public void setNombre(String nombre) 
+            {
+	        this.nombre = nombre;
+	    }
+
+	    public double getSalario() 
+            {
+	        return salario;
+	    }
+
+	    public void setSalario(double salario) 
+            {
+	        this.salario = salario;
+	    }
+
+	    public String getDepartamento() 
+            {
+	        return departamento;
+	    }
+
+	    public void setDepartamento(String departamento) 
+            {
+	        this.departamento = departamento;
+	    }
+}
+
+
+public class calcularPago 
+{
+   public double calcularPagoMensual(empleado empleado) 
    {
-       return velocidad;
+       return empleado.getSalario() / 12;
    }
 }
-
-
-
-
-public class Carro extends Vehiculo
-{
-	 @Override
-	 public void acelerar() 
-  {
-		 System.out.println("Acelerando el coche usando el motor.");
-	  velocidad += 10; 
-	 }
-}
-
-
-
-public class Bicicleta extends Vehiculo 
-{
-	 @Override
-	 public void acelerar() 
-  {
-		 System.out.println("Acelerando la bicicleta pedaleando.");
-	 }
-}
-
-
 
 public class Main 
 {
 	public static void main(String[] args) 
-  {
-       Vehiculo carro = new Carro();
-       Vehiculo bicicleta = new Bicicleta();
-
-       carro.acelerar();
-       System.out.println("Velocidad del coche: " + carro.getVelocidad());
-
-       bicicleta.acelerar();
-       System.out.println("Velocidad de la bicicleta: " + bicicleta.getVelocidad());
+    {
+       empleado empleado = new empleado("Juan Pérez", 60000, "Desarrollo");
+       calcularPago calcularPago = new calcularPago();
+       double pagoMensual = calcularPago.calcularPagoMensual(empleado);
+       System.out.println("El pago mensual de " + empleado.getNombre() + " es: $" + pagoMensual);
    }
 }
-
