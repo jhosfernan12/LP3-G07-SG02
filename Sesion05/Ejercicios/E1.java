@@ -10,7 +10,7 @@ public class Par<F, S>
         this.segundo = segundo;
     }
 
-   
+   //Getters
     public F getPrimero() 
     {
         return primero;
@@ -21,7 +21,7 @@ public class Par<F, S>
         return segundo;
     }
 
-    // Métodos set
+    // Setters
     public void setPrimero(F primero) 
     {
         this.primero = primero;
