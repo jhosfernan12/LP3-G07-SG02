@@ -1,68 +1,135 @@
-import java.io.IOException;
-import java.util.Scanner;
+import java.io.*;
 
-public class main 
+public class Gestor 
 {
-	public static void main(String[] args) throws IOException 
-	{
-        Scanner scanner = new Scanner(System.in);
-        Gestor gestor = new Gestor("personajes.txt");
+	 private String archivo;
 
-        while (true) {
-            System.out.println("\n--- Menú ---");
-            System.out.println("1 Añadir personaje");
-            System.out.println("2 Mostrar personajes");
-            System.out.println("3 Modificar personaje");
-            System.out.println("4 Borrar personaje");
-            System.out.println("5 Salir");
-            System.out.print("Elige una opcion: ");
-            int opcion = scanner.nextInt();
-            scanner.nextLine();  
+	 public Gestor(String archivo) throws IOException 
+	 {
+	        this.archivo = archivo;
+	        File file = new File(archivo);
+	        if (!file.exists()) 
+	        {
+	            file.createNewFile();
+	            System.out.println("Archivo 'personajes.txt' creado.");
+	        }
+	    }
 
-            switch (opcion) {
-                case 1:
-                    System.out.print("Nombre del personaje: ");
-                    String nombre = scanner.nextLine();
-                    System.out.print("Vida: ");
-                    int vida = scanner.nextInt();
-                    System.out.print("Ataque: ");
-                    int ataque = scanner.nextInt();
-                    System.out.print("Defensa: ");
-                    int defensa = scanner.nextInt();
-                    System.out.print("Alcance: ");
-                    int alcance = scanner.nextInt();
-                    Personaje nuevoPersonaje = new Personaje(nombre, vida, ataque, defensa, alcance);
-                    gestor.añadirPersonaje(nuevoPersonaje);
-                    break;
-                case 2:
-                    gestor.mostrarPersonajes();
-                    break;
-                case 3:
-                    System.out.print("Nombre del personaje a modificar: ");
-                    String nombreModificar = scanner.nextLine();
-                    System.out.print("Nueva vida: ");
-                    int nuevaVida = scanner.nextInt();
-                    System.out.print("Nuevo ataque: ");
-                    int nuevoAtaque = scanner.nextInt();
-                    System.out.print("Nueva defensa: ");
-                    int nuevaDefensa = scanner.nextInt();
-                    System.out.print("Nuevo alcance: ");
-                    int nuevoAlcance = scanner.nextInt();
-                    Personaje personajeModificado = new Personaje(nombreModificar, nuevaVida, nuevoAtaque, nuevaDefensa, nuevoAlcance);
-                    gestor.modificarPersonaje(nombreModificar, personajeModificado);
-                    break;
-                case 4:
-                    System.out.print("Nombre del personaje a borrar: ");
-                    String nombreBorrar = scanner.nextLine();
-                    gestor.borrarPersonaje(nombreBorrar);
-                    break;
-                case 5:
-                    System.out.println("Saliendo...");
-                    scanner.close();
-                    return;
-                default:
-                    System.out.println("Opcion no valida");
-            }
-        }
-    }
+	    public void añadirPersonaje(Personaje personaje) throws IOException 
+	    {
+	        if (buscarPersonaje(personaje.getNombre()) != null) 
+	        {
+	            System.out.println("El personaje '" + personaje.getNombre() + "' ya existe.");
+	            return;
+	        }
+
+	        try (BufferedWriter bw = new BufferedWriter(new FileWriter(archivo, true))) 
+	        {
+	            bw.write(personaje.toString());
+	            bw.newLine();
+	        }
+
+	        System.out.println("Personaje añadido: " + personaje.getNombre());
+	    }
+
+	    public void mostrarPersonajes() throws IOException 
+	    {
+	        try (BufferedReader br = new BufferedReader(new FileReader(archivo))) 
+	        {
+	            String linea;
+	            while ((linea = br.readLine()) != null) 
+	            {
+	                System.out.println(linea);
+	            }
+	        }
+	    }
+
+	    public void modificarPersonaje(String nombre, Personaje nuevoPersonaje) throws IOException 
+	    {
+	        File inputFile = new File(archivo);
+	        File tempFile = new File("temp.txt");
+
+	        try (BufferedReader br = new BufferedReader(new FileReader(inputFile));
+	             BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile))) 
+	        {
+	            String linea;
+	            boolean modificado = false;
+	            while ((linea = br.readLine()) != null) 
+	            {
+	                Personaje personajeExistente = Personaje.fromString(linea);
+	                if (personajeExistente.getNombre().equals(nombre)) 
+	                {
+	                    bw.write(nuevoPersonaje.toString());
+	                    modificado = true;
+	                } else 
+	                {
+	                    bw.write(linea);
+	                }
+	                bw.newLine();
+	            }
+
+	            if (modificado) 
+	            {
+	                System.out.println("Personaje '" + nombre + "' modificado.");
+	            } else {
+	                System.out.println("El personaje '" + nombre + "' no existe.");
+	            }
+	        }
+
+	        inputFile.delete();
+	        tempFile.renameTo(inputFile);
+	    }
+
+	    public void borrarPersonaje(String nombre) throws IOException 
+	    {
+	        File inputFile = new File(archivo);
+	        File tempFile = new File("temp.txt");
+
+	        try (BufferedReader br = new BufferedReader(new FileReader(inputFile));
+	             BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile))) 
+	        {
+	            String linea;
+	            boolean borrado = false;
+	            while ((linea = br.readLine()) != null) 
+	            {
+	                Personaje personaje = Personaje.fromString(linea);
+	                if (personaje.getNombre().equals(nombre)) 
+	                {
+	                    borrado = true;
+	                    continue;
+	                }
+	                bw.write(linea);
+	                bw.newLine();
+	            }
+
+	            if (borrado) 
+	            {
+	                System.out.println("Personaje '" + nombre + "' borrado.");
+	            } 
+	            else 
+	            {
+	                System.out.println("El personaje '" + nombre + "' no existe.");
+	            }
+	        }
+
+	        inputFile.delete();
+	        tempFile.renameTo(inputFile);
+	    }
+
+	    public Personaje buscarPersonaje(String nombre) throws IOException
+	    {
+	        try (BufferedReader br = new BufferedReader(new FileReader(archivo))) 
+	        {
+	            String linea;
+	            while ((linea = br.readLine()) != null) 
+	            {
+	                Personaje personaje = Personaje.fromString(linea);
+	                if (personaje.getNombre().equals(nombre)) 
+	                {
+	                    return personaje;
+	                }
+	            }
+	        }
+	        return null;
+	    }
 }
