@@ -13,7 +13,7 @@ public class MarcoPanel extends JFrame
 	 // constructor sin argumentos
 	 public MarcoPanel()
 	 {
-		 super("Demostracion de Panel");
+		 super("DIAZ - PACHECO");
 		 botones = new JButton[5];
 		 panelBotones = new JPanel();
 		 panelBotones.setLayout(new GridLayout(1, botones.length));
