@@ -9,40 +9,42 @@ public class CompraPasaje extends JFrame {
 
     // Declaracion de componentes
     private JTextField txtNombre, txtDocumento, txtFecha;
-    private JCheckBox chkAudifonos, chkManta, chkRevistas, chkSnacks;
-    private JRadioButton rbPrimerPiso, rbSegundoPiso, rbTercerPiso;
+    private JCheckBox chkAudifonos, chkManta, chkRevistas;
+    private JRadioButton rbPrimerPiso, rbSegundoPiso;
     private JComboBox<String> cbOrigen, cbDestino;
     private JList<String> listaServicio;
     private JButton btnMostrar, btnReiniciar;
 
     public CompraPasaje() {
-        
+        // Configuracion de la ventana principal
         setTitle("Pasajes - Diaz, Pacheco");
         setLayout(new BorderLayout(10, 10));
 
-      
+        // Panel principal donde organizamos los campos en columnas
         JPanel panelPrincipal = new JPanel();
-        panelPrincipal.setLayout(new GridLayout(0, 2, 5, 5));  
+        panelPrincipal.setLayout(new GridLayout(0, 2, 5, 5));  // 2 columnas, ajusta la cantidad de filas automaticamente
+
+        // Inicializacion de los componentes
         initComponents(panelPrincipal);
 
-
+        // Panel de botones al final
         JPanel panelBotones = new JPanel();
         panelBotones.setLayout(new FlowLayout(FlowLayout.CENTER));
         panelBotones.add(btnMostrar);
         panelBotones.add(btnReiniciar);
 
-        
+        // Anadir el panel principal y los botones a la ventana principal
         add(panelPrincipal, BorderLayout.CENTER);
         add(panelBotones, BorderLayout.SOUTH);
 
-
+        // Configuracion final de la ventana
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(350, 900);  
+        setSize(350, 900);  // Aumentado el tamano para mejorar la disposicion
         setVisible(true);
     }
 
     private void initComponents(JPanel panelPrincipal) {
-
+        // Campos de texto
         panelPrincipal.add(new JLabel("Nombre:"));
         txtNombre = new JTextField();
         panelPrincipal.add(txtNombre);
@@ -62,12 +64,10 @@ public class CompraPasaje extends JFrame {
         chkAudifonos = new JCheckBox("Audifonos");
         chkManta = new JCheckBox("Manta");
         chkRevistas = new JCheckBox("Revistas");
-        chkSnacks = new JCheckBox("Snacks");
         
         panelServicios.add(chkAudifonos);
         panelServicios.add(chkManta);
-        panelServicios.add(chkRevistas);
-        panelServicios.add(chkSnacks);
+        panelServicios.add(chkRevistas);;
         panelPrincipal.add(panelServicios);
 
         // Piso de preferencia
@@ -76,14 +76,11 @@ public class CompraPasaje extends JFrame {
         panelPiso.setLayout(new FlowLayout(FlowLayout.LEFT)); // Alineacion de los botones
         rbPrimerPiso = new JRadioButton("1er Piso");
         rbSegundoPiso = new JRadioButton("2do Piso");
-        rbTercerPiso = new JRadioButton("3erPiso");
         ButtonGroup bgPiso = new ButtonGroup();
         bgPiso.add(rbPrimerPiso);
         bgPiso.add(rbSegundoPiso);
-        bgPiso.add(rbTercerPiso);
         panelPiso.add(rbPrimerPiso);
         panelPiso.add(rbSegundoPiso);
-        panelPiso.add(rbTercerPiso);
         panelPrincipal.add(panelPiso);
 
         // Origen y Destino
@@ -92,7 +89,7 @@ public class CompraPasaje extends JFrame {
         panelPrincipal.add(cbOrigen);
 
         panelPrincipal.add(new JLabel("Destino:"));
-        cbDestino = new JComboBox<>(new String[]{"Ciudad X", "Ciudad Y", "Ciudad Z", "Ciudad W"});
+        cbDestino = new JComboBox<>(new String[]{"Ciudad X", "Ciudad Y", "Ciudad Z"});
         panelPrincipal.add(cbDestino);
 
         // Tipo de Servicio
@@ -140,8 +137,8 @@ public class CompraPasaje extends JFrame {
         // Servicios opcionales
         String servicios = (chkAudifonos.isSelected() ? "Audifonos " : "") +
                            (chkManta.isSelected() ? "Manta " : "") +
-                           (chkRevistas.isSelected() ? "Revistas" : "") +
-                           (chkSnacks.isSelected() ? "Snacks" : "");
+                           (chkRevistas.isSelected() ? "Revistas" : "");
+
 
        
         if (servicios.isEmpty()) 
@@ -155,9 +152,7 @@ public class CompraPasaje extends JFrame {
             piso = "1er Piso";
         } else if (rbSegundoPiso.isSelected()) {
             piso = "2do Piso";
-        } else if (rbTercerPiso.isSelected()) {
-        	piso = "3er Piso";
-        }
+        } 
         else {
             JOptionPane.showMessageDialog(this, "No se selecciono piso de preferencia", "Advertencia", JOptionPane.WARNING_MESSAGE);
             return;
