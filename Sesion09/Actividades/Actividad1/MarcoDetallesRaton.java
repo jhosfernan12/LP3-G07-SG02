@@ -13,7 +13,7 @@ public class MarcoDetallesRaton  extends JFrame
 	    // Constructor establece String de la barra de título y registra el componente de escucha del ratón
 	    public MarcoDetallesRaton() 
 	    {
-	        super("Clics y botones del ratón");
+	        super("DIAZ - PACHECO");
 	        
 	        barraEstado = new JLabel("Haga clic en el ratón"); // Mensaje inicial
 	        add(barraEstado, BorderLayout.SOUTH); // Agrega la barra de estado en la parte inferior de la ventana
