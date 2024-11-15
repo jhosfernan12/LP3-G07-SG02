@@ -17,7 +17,7 @@ public class MarcoRastreadorRaton extends JFrame
 	    // Constructor de MarcoRastreadorRaton establece la GUI y registra los manejadores de eventos de ratón
 	    public MarcoRastreadorRaton() 
 	    {
-	        super("Demostración de los eventos de ratón");
+	        super("DIAZ - PACHECO");
 
 	        panelRaton = new JPanel(); // Crea un nuevo panel
 	        panelRaton.setBackground(Color.WHITE); // Establece el color de fondo del panel
