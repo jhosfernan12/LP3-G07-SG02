@@ -16,7 +16,7 @@ public class MarcoDemoTeclas extends JFrame implements KeyListener
    
     public MarcoDemoTeclas() 
     {
-        super("Demostración de los eventos de pulsación de teclas");
+        super("DIAZ - PACHECO");
 
         areaTexto = new JTextArea(10, 15); // Crea el objeto JTextArea
         areaTexto.setText("Oprima cualquier tecla en el teclado...");
