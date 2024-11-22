@@ -10,7 +10,7 @@ public class GestionProducto
 
     public static void main(String[] args) 
     {
-        JFrame frame = new JFrame("E1|DIAZ-PACHECO");
+        JFrame frame = new JFrame("Productos");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(200, 250);  
         frame.setLayout(new BorderLayout());
