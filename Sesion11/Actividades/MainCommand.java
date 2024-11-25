@@ -29,6 +29,8 @@ public class MainCommand
 	     controlRemoto.pulsarSubirVolumen();
 	     controlRemoto.pulsarCambiarCanal();
 	     controlRemoto.pulsarBajarVolumen();
+	     controlRemoto.pulsarSubirVolumen();
+	     controlRemoto.pulsarCambiarCanal();
 	     controlRemoto.pulsarApagar();
 	 }
 }
