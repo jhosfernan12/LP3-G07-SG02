@@ -1,6 +1,6 @@
 package s11;
 
-//EstrategiaMovimiento.java
+
 interface EstrategiaMovimiento
 {
 	void mover();
