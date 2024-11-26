@@ -1,6 +1,6 @@
 package s11;
 
-//Comando.java
+
 interface Comando 
 {
 	void ejecutar();
